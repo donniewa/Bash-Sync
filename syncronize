@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Sync script for VannenWatches.com
+
+# list of excludes
+EXCLUDES_UP=$HOME/Scripts/exclude_up.list
+EXCLUDES_DOWN=$HOME/Scripts/exclude_down.list
+
+# Server Information
+SERVER_HOST=*.*.*.*
+SERVER_USER=*****
+SERVER_PATH="~/public_html/"
+
+# Local Path
+LOCAL_PATH="/Volumes/sitename/"
+
+# Rsync Options
+OPTS_TEST="-nruzvtCP
+      --itemize-changes
+      --human-readable"
+
+OPTS_LIVE="-ruzvtCP
+      --itemize-changes
+      --human-readable"
+
+# Start the script
+echo -e "Getting ready to sync, please choose a direction: up | down"
+read direction
+
+if test $direction == "up"
+then
+	echo rsync $OPTS_TEST --exclude-from=$EXCLUDES_UP $LOCAL_PATH $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+	rsync $OPTS_TEST --exclude-from=$EXCLUDES_UP $LOCAL_PATH $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+	echo -e "Sync these files up to the remote server?  y | n"
+	read confirm
+
+elif test $direction == "down"
+then
+	echo rsync $OPTS_TEST --exclude-from=$EXCLUDES_DOWN $SERVER_USER@$SERVER_HOST:$SERVER_PATH $LOCAL_PATH
+	rsync $OPTS_TEST --exclude-from=$EXCLUDES_DOWN $SERVER_USER@$SERVER_HOST:$SERVER_PATH $LOCAL_PATH
+	echo -e "Sync these files down to your local?  y | n"
+	read confirm
+
+else
+	echo "Please type: up | down"
+	exit
+fi
+
+if test $confirm == "y" && test $direction == "up"
+then
+	echo rsync $OPTS_LIVE --exclude-from=$EXCLUDES_UP $LOCAL_PATH $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+	rsync $OPTS_LIVE --exclude-from=$EXCLUDES_UP $LOCAL_PATH $SERVER_USER@$SERVER_HOST:$SERVER_PATH
+elif test $confirm == "y" && test $direction == "down"
+then
+	echo rsync $OPTS_LIVE --exclude-from=$EXCLUDES_DOWN $SERVER_USER@$SERVER_HOST:$SERVER_PATH $LOCAL_PATH
+	rsync $OPTS_LIVE --exclude-from=$EXCLUDES_DOWN $SERVER_USER@$SERVER_HOST:$SERVER_PATH $LOCAL_PATH
+elif test $confirm == "n"
+then
+	echo "Cancelled Sync"
+else
+	echo "Please Type y or n"
+fi

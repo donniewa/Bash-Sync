@@ -1,0 +1,14 @@
+.htaccess
+*data/sessions/*
+*data/cache/*
+public/personal/*
+*.zip
+*.DS_*
+.com*
+.fseventsd*
+.git
+.project
+.settings
+.tmp*
+.Trashes*
+.VolumeIcon.icns
